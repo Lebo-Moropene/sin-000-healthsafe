@@ -16,7 +16,13 @@ in the root README for the endpoint shapes.
 ```
 alert-level-service/
 ├── pom.xml
-└── src/main/java/co/wethinkcode/healthsafe/AlertLevelServiceApp.java
+├── README.md
+└── src/
+    ├── main/java/co/wethinkcode/healthsafe/
+    │   ├── AlertLevelServiceApp.java
+    │   └── AlertLevelTracker.java
+    └── test/java/co/wethinkcode/healthsafe/
+        └── AlertLevelTrackerTest.java
 ```
 
 ## Build
@@ -31,15 +37,20 @@ mvn package
 java -jar target/alert-level-service.jar
 ```
 
-Listens on port `7032`.
+Listens on port `7032`. `GET /alert-level` reads the current status;
+`PUT`/`POST /alert-level` set it (400 for out-of-range or malformed input).
 
 ## Test
 
-No automated tests yet. Manually verify it's up:
+Unit tests cover the 0-8 range validation:
+
+```
+mvn test
+```
+
+Manually verify it's up:
 
 ```
 curl http://localhost:7032/health   # -> OK
+curl http://localhost:7032/alert-level   # -> { "level": 0 }
 ```
-
-To add real tests, add JUnit 5 + the Surefire plugin to `pom.xml`, put tests under
-`src/test/java/co/wethinkcode/healthsafe/`, and run `mvn test`.

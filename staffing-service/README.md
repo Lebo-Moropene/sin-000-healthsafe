@@ -19,10 +19,20 @@ in the root README for the endpoint shapes.
 ```
 staffing-service/
 ├── pom.xml
-└── src/main/java/co/wethinkcode/healthsafe/
-    ├── StaffingServiceApp.java
-    └── mq/
-        └── MqConfig.java
+├── README.md
+└── src/
+    ├── main/java/co/wethinkcode/healthsafe/
+    │   ├── StaffingServiceApp.java
+    │   ├── Ward.java
+    │   ├── WardClient.java
+    │   ├── AlertLevelClient.java
+    │   ├── Schedule.java
+    │   ├── ScheduleComputer.java
+    │   └── mq/
+    │       ├── MqConfig.java
+    │       └── TopicPublisher.java
+    └── test/java/co/wethinkcode/healthsafe/
+        └── ScheduleComputerTest.java
 ```
 
 ## Build
@@ -37,15 +47,20 @@ mvn package
 java -jar target/staffing-service.jar
 ```
 
-Listens on port `7033`.
+Listens on port `7033`. `GET /schedule/{wardId}` returns the on-call schedule,
+or 404/502/504 when a downstream service is missing or unreachable.
 
 ## Test
 
-No automated tests yet. Manually verify it's up:
+Unit tests cover the scheduling rules (staffing scales with Emergency Status,
+critical departments start with two doctors, levels are clamped):
+
+```
+mvn test
+```
+
+Manually verify it's up:
 
 ```
 curl http://localhost:7033/health   # -> OK
 ```
-
-To add real tests, add JUnit 5 + the Surefire plugin to `pom.xml`, put tests under
-`src/test/java/co/wethinkcode/healthsafe/`, and run `mvn test`.

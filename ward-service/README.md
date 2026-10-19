@@ -16,10 +16,14 @@ REST: called by `staffing-service` (`../staffing-service`) and `alert-level-serv
 ```
 ward-service/
 ├── pom.xml
+├── README.md
 └── src/main/java/co/wethinkcode/healthsafe/
     ├── WardServiceApp.java
+    ├── Ward.java
+    ├── WardCatalog.java
     └── mq/
-        └── MqConfig.java
+        ├── MqConfig.java
+        └── MqManager.java
 ```
 
 ## Build
@@ -34,15 +38,14 @@ mvn package
 java -jar target/ward-service.jar
 ```
 
-Listens on port `7031`.
+Listens on port `7031`. Bootstrap retries until ingestion-service is reachable,
+so startup order doesn't matter.
 
 ## Test
 
-No automated tests yet. Manually verify it's up:
+No automated tests. Manually verify it's up:
 
 ```
 curl http://localhost:7031/health   # -> OK
+curl http://localhost:7031/wards    # -> wards cached from ingestion-service
 ```
-
-To add real tests, add JUnit 5 + the Surefire plugin to `pom.xml`, put tests under
-`src/test/java/co/wethinkcode/healthsafe/`, and run `mvn test`.

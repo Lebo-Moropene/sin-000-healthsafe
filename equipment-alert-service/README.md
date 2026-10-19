@@ -30,10 +30,12 @@ where every subscriber gets every message.
 ```
 equipment-alert-service/
 ├── pom.xml
+├── README.md
 └── src/main/java/co/wethinkcode/healthsafe/
     ├── EquipmentAlertServiceApp.java
     └── mq/
-        └── MqConfig.java
+        ├── MqConfig.java
+        └── EquipmentAlertConsumer.java
 ```
 
 ## Build
@@ -48,15 +50,22 @@ mvn package
 java -jar target/equipment-alert-service.jar
 ```
 
-Listens on port `7034`.
+Listens on port `7034`. Handled alerts are readable at `GET /alerts`.
 
 ## Test
 
-No automated tests yet. Manually verify it's up:
+No automated tests. Manually verify it's up and consuming:
 
 ```
 curl http://localhost:7034/health   # -> OK
 ```
 
-To add real tests, add JUnit 5 + the Surefire plugin to `pom.xml`, put tests under
-`src/test/java/co/wethinkcode/healthsafe/`, and run `mvn test`.
+With the broker running (`../common && docker compose up -d`) and
+`ward-service` up, report a failure and watch it arrive:
+
+```
+curl -X POST http://localhost:7031/wards/W-01/equipment-failures \
+  -H 'Content-Type: application/json' \
+  -d '{"equipment":"ventilator-3","failure":"alarm unresponsive"}'
+curl http://localhost:7034/alerts
+```

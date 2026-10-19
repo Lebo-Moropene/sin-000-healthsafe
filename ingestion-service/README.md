@@ -63,9 +63,16 @@ out for (and handle) at least:
 ```
 ingestion-service/
 ├── pom.xml
-└── src/main/
-    ├── java/co/wethinkcode/healthsafe/IngestionServiceApp.java
-    └── resources/wards-outdated.csv
+├── README.md
+└── src/
+    ├── main/
+    │   ├── java/co/wethinkcode/healthsafe/
+    │   │   ├── IngestionServiceApp.java
+    │   │   ├── Ward.java
+    │   │   └── WardCleaner.java
+    │   └── resources/wards-outdated.csv
+    └── test/java/co/wethinkcode/healthsafe/
+        └── WardCleanerTest.java
 ```
 
 ## Build
@@ -80,16 +87,21 @@ mvn package
 java -jar target/ingestion-service.jar
 ```
 
-Listens on port `7030`. Currently just exposes `/health` — the actual CSV
-parsing/cleaning logic is a TODO.
+Listens on port `7030`. Serves the cleaned records at `GET /wards` and
+`GET /wards/{id}`, plus the usual `GET /health`.
 
 ## Test
 
-No automated tests yet. Manually verify it's up:
+Unit tests cover the data cleaning rules (casing, padding, duplicates, dates,
+placeholders, non-numeric values, boolean variants):
+
+```
+mvn test
+```
+
+Manually verify it's up:
 
 ```
 curl http://localhost:7030/health   # -> OK
+curl http://localhost:7030/wards   # -> cleaned ward records as JSON
 ```
-
-To add real tests, add JUnit 5 + the Surefire plugin to `pom.xml`, put tests under
-`src/test/java/co/wethinkcode/healthsafe/`, and run `mvn test`.
