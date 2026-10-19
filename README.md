@@ -188,6 +188,6 @@ then add tests under that module's `src/test/java/...` and run:
 mvn test
 ```
 
-Verification code WTC-WNM99365
+verification code:
 
-<!-- implementation complete: stages 1-4 -->
+WTC-9W789GWP
